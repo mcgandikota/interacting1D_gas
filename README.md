@@ -1,1 +1,1 @@
-Riesz gas of general potential and N particles interacting in 1D
+Riesz gas - N particles having long range power law interactions in 1D 
