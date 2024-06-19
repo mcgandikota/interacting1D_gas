@@ -150,7 +150,7 @@ here:
 			interactions += pow(abs(x[i]-x[j]),-k-2)*(x[i]-x[j]);
 			}
 		}
-	interactions *= 1./2.*J*signK*k; //need -1 for k<0 and 1 for k>0
+	interactions *= J*signK*k; //need -1 for k<0 and 1 for k>0
 	force[i]=harmonic+interactions;
 	if(force[i]!=force[i]) {cout<<"Blew up\n"<<endl; goto here;}
 	}

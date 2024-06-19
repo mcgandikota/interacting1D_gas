@@ -14,13 +14,11 @@ float x[20000],xold[20000],xnew[20000];
 float xOld[20000];
 float velocity[20000];
 float force[20000];
-float deltaT=0.00004;
+float deltaT=0.0001;
 float delta2T=deltaT*deltaT;
 int N;
 float J=1.0;
-float k;
-int signK;
-//int skip=3000000;
+//int skip=900000;
 int skip=900000;
 int print=10000;
 float Gamma=10; //viscosity 
@@ -38,12 +36,9 @@ default_random_engine generator;
 normal_distribution<double> distribution(0.0,sqrt(2*Gamma*T)); //coefficient??????????????, you are assuming equilibrium here
 
 int main(int argc, char *argv[]){
-if (argc!=4) {printf("./a.out k N steps\n");exit(0);}
-k = atof(argv[1]);
-if (k>=0) {signK=1;}
-else {signK=-1;}
-N = atoi(argv[2]);
-long int steps = atoi(argv[3]);
+if (argc!=3) {printf("./a.out N steps\n");exit(0);}
+N = atoi(argv[1]);
+long int steps = atoi(argv[2]);
 
 FILE *movie;
 movie=fopen("out.dump","w"); //rewwrites file
@@ -66,6 +61,7 @@ generator.seed( rd() );
 	mdrun();
 		if(i%print==0){
 		cout<<i<<" ";
+
 		//print movie
 		movie=fopen("out.dump","a");
 		fprintf(movie,"%d\n\n",N);
@@ -86,12 +82,9 @@ generator.seed( rd() );
 		}
 	}
 
-			//for(int j=0; j<N-1; j++){
-		//		cout <<x[j+1]-x[j]<<endl;
-		//	}
 
 FILE *out;
-out=fopen("histogram.dat","w"); //rewwrites file
+out=fopen("histogram.dat","w"); //rewrites file
 fclose(out);
 
 	for(int i=0; i<(int)Nbins/2; i++){
@@ -155,10 +148,10 @@ int i,j;
 	
 		for (j=0;j<N;j++){
 			if(j!=i){
-			interactions += pow(abs(x[i]-x[j]),-k-2)*(x[i]-x[j]);
+			interactions += pow(abs(x[i]-x[j]),-2)*(x[i]-x[j]);
 			}
 		}
-	interactions *= J*signK*k; //need -1 for k<0 and 1 for k>0
+	interactions *= J; //need -1 for k<0 and 1 for k>0
 	force[i]=harmonic+interactions;
 	if(force[i]!=force[i]) {cout<<"Blew up\n"<<endl; exit(0);}
 	}
@@ -193,13 +186,13 @@ kinetic_energy=0.;
 	harmonic_energy += x[i]*x[i];
         	for(int j=0;j<N;j++){
 			if(j!=i){
-			interaction_energy += pow(abs(x[i]-x[j]),-k);
+			interaction_energy += log(abs(x[i]-x[j]));
 			}
 		}
 
 	}
 harmonic_energy *= 1/2.;
-interaction_energy *= 1./2.*J*signK*k;
+interaction_energy *= -1./2.*J;
 potential_energy=harmonic_energy+interaction_energy;
 
 kinetic_energy/= N;
